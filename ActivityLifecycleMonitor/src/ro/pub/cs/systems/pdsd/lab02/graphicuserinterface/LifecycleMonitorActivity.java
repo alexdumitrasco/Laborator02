@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
@@ -64,7 +65,9 @@ public class LifecycleMonitorActivity extends Activity {
 		}
 		
 	}
-
+	
+	boolean started = false;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +77,97 @@ public class LifecycleMonitorActivity extends Activity {
         okButton.setOnClickListener(buttonClickListener);
         Button cancelButton = (Button)findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(buttonClickListener);
-        Log.d(Constants.TAG, "onCreate() method was invoked");
+        if (!started)
+        	Log.d(Constants.TAG, "onCreate() first time running");
+        else
+        	Log.d(Constants.TAG, "onCreate() activity was started earlier");
+    
+		EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+		EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+		
+		if (savedInstanceState.getBoolean(Constants.CREDENTIAL_TAG)) {
+			usernameEditText.setText(savedInstanceState.getCharArray(Constants.USERNAME_TAG).toString());
+			passwordEditText.setText(savedInstanceState.getCharArray(Constants.PASSWORD_TAG).toString());
+		}
     }    
 
     @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+        Log.d(Constants.TAG, "onDestroy() method was invoked");
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+        Log.d(Constants.TAG, "onPause() method was invoked");
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+		EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+		
+		if (savedInstanceState.getBoolean(Constants.CREDENTIAL_TAG)) {
+			usernameEditText.setText(savedInstanceState.getCharArray(Constants.USERNAME_TAG).toString());
+			passwordEditText.setText(savedInstanceState.getCharArray(Constants.PASSWORD_TAG).toString());
+			
+			System.out.println(savedInstanceState.getCharArray(Constants.USERNAME_TAG).toString());
+			System.out.println(savedInstanceState.getCharArray(Constants.PASSWORD_TAG).toString());
+			
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		CheckBox checkbox = (CheckBox)findViewById(R.id.remember_me_checkbox);
+		if (checkbox.isChecked()) {
+			EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+			EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+			
+			outState.putString(Constants.USERNAME_TAG, usernameEditText.getText().toString());
+			outState.putString(Constants.PASSWORD_TAG, passwordEditText.getText().toString());
+			outState.putBoolean(Constants.CREDENTIAL_TAG, true);
+		}
+	}
+
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		started = false;
+        Log.d(Constants.TAG, "onRestart() method was invoked");
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		started = true;
+        Log.d(Constants.TAG, "onResume() method was invoked");
+	}
+
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+        Log.d(Constants.TAG, "onStart() method was invoked");
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+        Log.d(Constants.TAG, "onStop() method was invoked");
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
